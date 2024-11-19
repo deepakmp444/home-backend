@@ -73,6 +73,24 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
     }
 });
 
+// GET: Download an image by filename
+app.get('/api/download/:filename', (req, res) => {
+    const { filename } = req.params;
+    const filePath = path.join(uploadsDir, filename);
+
+    // Check if the file exists
+    if (fs.existsSync(filePath)) {
+        res.download(filePath, filename, (err) => {
+            if (err) {
+                console.error('Error during file download:', err);
+                res.status(500).json({ message: 'Error during file download' });
+            }
+        });
+    } else {
+        res.status(404).json({ message: 'File not found' });
+    }
+});
+
 // Start the server
 const PORT = 5003;
 app.listen(PORT, () => {
